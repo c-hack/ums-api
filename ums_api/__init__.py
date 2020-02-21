@@ -2,6 +2,7 @@
 UMS api init file.
 """
 from os import environ
+from os.path import abspath
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
@@ -11,6 +12,7 @@ from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 
 from .logging import init_logging, get_logging
+from .profile_adapter_loader import load_profile_adapter
 
 APP = Flask(__name__, instance_relative_config=True)  # type: Flask
 APP.config['MODE'] = environ['MODE'].upper()
@@ -26,9 +28,19 @@ APP.config.from_pyfile('ums_api.conf', silent=True)
 if 'CONFIG_FILE' in environ:
     APP.config.from_pyfile(environ.get('CONFIG_FILE', 'ums_api.conf'), silent=True)
 
-CONFIG_KEYS = ('SQLALCHEMY_DATABASE_URI', 'JWT_SECRET_KEY')
-for env_var in CONFIG_KEYS:
+ENV_VARS = ('SQLALCHEMY_DATABASE_URI', 'JWT_SECRET_KEY', 'USER_ID_SECRET_KEY')
+for env_var in ENV_VARS:
     APP.config[env_var] = environ.get(env_var, APP.config.get(env_var))
+
+SECRETS = ('JWT_SECRET_KEY', 'USER_ID_SECRET_KEY')
+for var in SECRETS:
+    if not APP.config[var]:
+        raise ValueError("The secret " + var + " is not set!")
+try:
+    if len(bytes(APP.config['USER_ID_SECRET_KEY'])) != 32:
+        raise ValueError("The secret USER_ID_SECRET_KEY must be exactly 32 bytes long!")
+except TypeError:
+    raise ValueError("The secret USER_ID_SECRET_KEY must be a bytes object. Use b'whatever' to create one.")
 
 init_logging(APP)
 
@@ -52,6 +64,11 @@ JWT: JWTManager = JWTManager(APP)
 
 # Setup Headers
 CORS(APP)
+
+PROFILE_ADAPTER = load_profile_adapter(abspath(APP.config["PROFILE_ADAPTER_PLUGIN"]))
+
+if APP.config["REGISTRATION_VERIFY_EMAILS"] and not PROFILE_ADAPTER.is_email_verification_supported():
+    raise ValueError('E-Mail Verification is turned on but not supported by the adapter!')
 
 # pylint: disable=C0413
 from . import db_models

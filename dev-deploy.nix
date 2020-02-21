@@ -1,9 +1,16 @@
 { pkgs ? import <nixpkgs> {} }:
+let
+    nur = import (builtins.fetchTarball "https://github.com/nix-community/NUR/archive/master.tar.gz") {
+      inherit pkgs;
+    };
+    myPython = (with pkgs; nur.repos.neumantm.pythonWithPipenv.override { myPythonDerivation = python37; myPythonPackages = pp: with pp; [ pylint ]; });
+in 
   pkgs.mkShell {
+    buildInputs = with pkgs; [myPython];
     shellHook = ''
               function initPipenvIfNeeded {
                 if ! pipenv --venv > /dev/null 2>&1 ;then
-                  pipenv install --dev
+                  pipenv install --dev  
                 fi
               }              
 
@@ -30,5 +37,5 @@
 
               flask create_db
     '';
-}
+  }
 

@@ -39,9 +39,9 @@ flask run
 
 Instead the file shell.nix can be used with the program nix-shell:
 ```shell
-nix-shell shell.nix
+nix-shell
 ```
-The everything is set up for you and you only need to start the server:
+Then everything is set up for you and you only need to start the server:
 ```shell
 flask run
 ```

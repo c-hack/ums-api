@@ -1,12 +1,12 @@
 """Module containing default config values."""
-from random import randint
 
 class Config(object):
     DEBUG = False
     TESTING = False
     RESTPLUS_VALIDATE = True
     JWT_CLAIMS_IN_REFRESH_TOKEN = True
-    JWT_SECRET_KEY = ''.join(hex(randint(0, 255))[2:] for i in range(16))
+    JWT_SECRET_KEY = ''
+    USER_ID_SECRET_KEY = ''
     SQLALCHEMY_DATABASE_URI = 'sqlite://:memory:'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     DB_UNIQUE_CONSTRAIN_FAIL = 'UNIQUE constraint failed'
@@ -18,15 +18,12 @@ class Config(object):
     LDAP_START_TLS = False
     LDAP_USER_SEARCH_BASE = ""
     LDAP_GROUP_SEARCH_BASE = ""
-    LDAP_USER_RDN = ""
-    LDAP_USER_UID_FIELD = ""
-    LDAP_GROUP_MEMBERSHIP_FIELD = ""
-    LDAP_CONSUMER_FILTER = ""
-    LDAP_KIOSK_USER_FILTER = ""
-    LDAP_ADMIN_FILTER = ""
-    LDAP_CONSUMER_GROUP_FILTER = ""
-    LDAP_KIOSK_USER_GROUP_FILTER = ""
-    LDAP_ADMIN_GROUP_FILTER = ""
+
+    LDAP_ANONYMOUS_BIND = False
+
+    #The following block is only used when LDAP_ANONYMOUS_BIND is False
+    LDAP_SYSTEM_USER_DN = ""
+    LDAP_SYSTEM_USER_PW = ""
 
     LOGGING_CONFIGS = ['logging_config.json']
 
@@ -34,6 +31,30 @@ class Config(object):
     JSONIFY_PRETTYPRINT_REGULAR = False
     RESTPLUS_JSON = {'indent': None}
 
+    PROFILE_ADAPTER_PLUGIN = "example_profile_adapter.py"
+
+    MAIL_SERVER_HOST = ""
+    MAIL_SERVER_PORT = 25
+    MAIL_SERVER_SSL = False
+    MAIL_SERVER_STARTTLS = True
+    MAIL_SERVER_LOGIN = True
+    MAIL_SERVER_USER = ""
+    MAIL_SERVER_PW = ""
+    MAIL_SENDING_ADDRESS = ""
+
+    REGISTRATION_VERIFY_EMAILS = True
+    REGISTRATION_MAIL_SUBJECT = "Welcome to UMS"
+    REGISTRATION_MAIL_BODY = "Hi, \n\nyou have just registered at our UMS. \n" \
+                             "Please click the following link to continue the registration process: \n" \
+                             "{} \n\nCheers \nYour admins"
+
+    LOGIN_SEARCH_USER = True
+
+    #Only used if LOGIN_SEARCH_USER user is True
+    LOGIN_SEARCH_USER_FILTER = ""
+
+    #Only used if LOGIN_SEARCH_USER user is False
+    LOGIN_USER_DN_PATTERN = ""
 
 class ProductionConfig(Config):
     pass
@@ -43,6 +64,7 @@ class DebugConfig(Config):
     DEBUG = True
     SQLALCHEMY_DATABASE_URI = 'sqlite:////tmp/test.db'
     JWT_SECRET_KEY = 'debug'
+    USER_ID_SECRET_KEY = b'0123456789ABCDEF0123456789ABCDEF'
 
     LOGGING_CONFIGS = ['logging_config.json', 'logging_config_debug.json']
 
