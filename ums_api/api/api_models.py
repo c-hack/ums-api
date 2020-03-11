@@ -31,7 +31,8 @@ REGISTRATION_POST = API.model('RegistrationPOST', {
 
 REGISTRATION_GET = API.inherit('RegistrationGET', ID, {
     'data': fields.Nested(REGISTRATION_DATA, attribute=lambda x: x.get_data_json()),
-    'username': fields.String(max_length=STD_STRING_SIZE, title='Username')
+    'username': fields.String(max_length=STD_STRING_SIZE, title='Username', readonly=True),
+    'mail_confirmed': fields.Boolean(readonly=True)
 })
 
 EMAIL_VERIFICATION_POST = API.model('EmailVerificationPOST', {

@@ -13,14 +13,14 @@ from ..db_models.registration import Registration
 
 from . import email
 
-def get_token_url(token: str, frontend_email_verification_url: str) -> str:
+def get_token_url(registration: Registration, frontend_email_verification_url: str) -> str:
     """
     Generate the url for email address verification mail containing the given token.
     To undo in JS: JSON.parse(atob(new URLSearchParams(window.location.search).get('data'))).token
     """
     data = {
-        'token': token,
-        'verification_url': url_for("api.registrations_email_verification")
+        'token': registration.token,
+        'verification_url': url_for("api.registrations_email_verification", registration_id=registration.id, _external=True)
     }
     data_encoded = urlsafe_b64encode(dumps(data, separators=(',', ':')).encode())
     old_url = urlsplit(frontend_email_verification_url)
@@ -44,20 +44,19 @@ def submit_registration(registration: Registration, email_verification_url: str)
     """
     if APP.config["REGISTRATION_VERIFY_EMAILS"]:
         generate_token(registration)
-        email.send_registraion_email(registration.email, get_token_url(registration.token, email_verification_url))
+        email.send_registraion_email(registration.email, get_token_url(registration, email_verification_url))
         registration.mail_sent = True
         DB.session.commit()
     else:
         registration.mail_confirmed = True
         DB.session.commit()
 
-def process_token(token: str) -> bool:
+def process_token(registration: Registration, token: str) -> bool:
     """
     Process an email verification token.
     Returns whether the token was valid.
     """
-    registration = Registration.query.filter(Registration.token == token).first()
-    if registration is None:
+    if registration.token != token:
         return False
     registration.mail_confirmed = True
     DB.session.commit()
