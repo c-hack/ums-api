@@ -51,10 +51,17 @@ class Config(object):
     LOGIN_SEARCH_USER = True
 
     #Only used if LOGIN_SEARCH_USER user is True
+    #The character % will be replaced by the username which is searched
     LOGIN_SEARCH_USER_FILTER = ""
 
     #Only used if LOGIN_SEARCH_USER user is False
+    #The character % will be replaced by the username
     LOGIN_USER_DN_PATTERN = ""
+
+    USER_CREATOR_FILTER = ""
+
+    # If True LDAP_ANONYMOUS_BIND must be False and the LDAP_SYSTEM_USER_DN must be able to write to the password field of users.
+    ALLOW_PASSWORD_RESET_BY_SYSTEM = True
 
 class ProductionConfig(Config):
     pass

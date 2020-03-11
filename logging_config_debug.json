@@ -1,7 +1,8 @@
 {
     "loggers": {
         "flask.app.auth": {
-            "level": 10
+            "level": 10,
+            "handlers": ["console"]
         },
         "flask.app.db": {
             "level": 10

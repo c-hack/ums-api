@@ -70,6 +70,9 @@ PROFILE_ADAPTER = load_profile_adapter(abspath(APP.config["PROFILE_ADAPTER_PLUGI
 if APP.config["REGISTRATION_VERIFY_EMAILS"] and not PROFILE_ADAPTER.is_email_verification_supported():
     raise ValueError('E-Mail Verification is turned on but not supported by the adapter!')
 
+if APP.config['ALLOW_PASSWORD_RESET_BY_SYSTEM'] and APP.config['LDAP_ANONYMOUS_BIND']:
+    raise ValueError('System password reset and ldap anonymous bind cannot both be on.')
+
 # pylint: disable=C0413
 from . import db_models
 # pylint: disable=C0413

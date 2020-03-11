@@ -1,4 +1,4 @@
 """
 The logic module
 """
-from . import ldap, login, profile, registration, email
+from . import ldap, auth, profile, registration, email

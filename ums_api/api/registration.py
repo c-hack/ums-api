@@ -8,6 +8,7 @@ from flask_jwt_extended import jwt_required
 
 from . import API
 from .api_models import REGISTRATION_GET, REGISTRATION_POST, EMAIL_VERIFICATION_POST
+from .auth_helper import requires_user_creator
 
 from .. import DB
 from .. import PROFILE_ADAPTER
@@ -22,6 +23,7 @@ class RegistrationList(Resource):
     All current registrations
     """
     @jwt_required
+    @requires_user_creator()
     @API.marshal_list_with(REGISTRATION_GET)
     # pylint: disable=R0201
     def get(self):

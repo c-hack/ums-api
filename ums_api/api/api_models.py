@@ -15,7 +15,9 @@ ID = API.model('Id', {
 ROOT_MODEL = API.model('RootModel', {
     'registrations': fields.Url('api.registrations_registration_list'),
     'login': fields.Url('api.login_login_routes'),
-    'profile': fields.Url('api.profile_profile_routes')
+    'profile': fields.Url('api.profile_profile_routes'),
+    'doc': fields.Url('api.doc'),
+    'spec': fields.Url('api.specs'),
 })
 
 REGISTRATION_DATA = API.model('RegistrationDATA', PROFILE_ADAPTER.get_api_definition_registration(STD_STRING_SIZE))
